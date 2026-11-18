@@ -1,0 +1,128 @@
+{
+  "waybills": [
+    {
+      "id": "WB-1001",
+      "title": "华东干线样件",
+      "status_proj": "运输中",
+      "created_at": "2026-11-17T08:00:00Z"
+    },
+    {
+      "id": "WB-1002",
+      "title": "同城急送样件",
+      "status_proj": "已揽收",
+      "created_at": "2026-11-17T09:00:00Z"
+    },
+    {
+      "id": "WB-2001",
+      "title": "跳站隔离样件",
+      "status_proj": "未知",
+      "created_at": "2026-11-17T08:05:00Z"
+    },
+    {
+      "id": "WB-2002",
+      "title": "合规路径样件",
+      "status_proj": "未知",
+      "created_at": "2026-11-17T08:20:00Z"
+    }
+  ],
+  "declared_routes": [
+    {
+      "waybill_id": "WB-1001",
+      "location_codes": ["SHA-HUB", "NJ-HUB", "HZ-HUB", "HZ-STATION"]
+    },
+    {
+      "waybill_id": "WB-1002",
+      "location_codes": ["SH-LOCAL"]
+    },
+    {
+      "waybill_id": "WB-2001",
+      "location_codes": ["SHA-HUB", "NJ-HUB", "HF-HUB", "WH-HUB"]
+    },
+    {
+      "waybill_id": "WB-2002",
+      "location_codes": ["SHA-HUB", "NJ-HUB", "HF-HUB", "WH-HUB"]
+    }
+  ],
+  "hops": [
+    {
+      "id": "H-1",
+      "waybill_id": "WB-1001",
+      "event_ts": "2026-11-17T08:10:00Z",
+      "location_code": "SHA-HUB",
+      "event_code": "PICKED",
+      "seq": 1
+    },
+    {
+      "id": "H-2",
+      "waybill_id": "WB-1001",
+      "event_ts": "2026-11-17T12:40:00Z",
+      "location_code": "NJ-HUB",
+      "event_code": "IN_TRANSIT",
+      "seq": 2
+    },
+    {
+      "id": "H-3",
+      "waybill_id": "WB-1001",
+      "event_ts": "2026-11-17T18:05:00Z",
+      "location_code": "HZ-HUB",
+      "event_code": "ARRIVED_HUB",
+      "seq": 3
+    },
+    {
+      "id": "H-4",
+      "waybill_id": "WB-1002",
+      "event_ts": "2026-11-17T09:15:00Z",
+      "location_code": "SH-LOCAL",
+      "event_code": "PICKED",
+      "seq": 1
+    },
+    {
+      "id": "H-2001-1",
+      "waybill_id": "WB-2001",
+      "event_ts": "2026-11-17T08:30:00Z",
+      "location_code": "SHA-HUB",
+      "event_code": "PICKED",
+      "seq": 1
+    },
+    {
+      "id": "H-2001-2",
+      "waybill_id": "WB-2001",
+      "event_ts": "2026-11-17T13:10:00Z",
+      "location_code": "NJ-HUB",
+      "event_code": "ARRIVED_HUB",
+      "seq": 2
+    },
+    {
+      "id": "H-2001-3",
+      "waybill_id": "WB-2001",
+      "event_ts": "2026-11-17T19:40:00Z",
+      "location_code": "WH-HUB",
+      "event_code": "ARRIVED_HUB",
+      "seq": 3
+    },
+    {
+      "id": "H-2002-1",
+      "waybill_id": "WB-2002",
+      "event_ts": "2026-11-17T08:40:00Z",
+      "location_code": "SHA-HUB",
+      "event_code": "PICKED",
+      "seq": 1
+    },
+    {
+      "id": "H-2002-2",
+      "waybill_id": "WB-2002",
+      "event_ts": "2026-11-17T12:55:00Z",
+      "location_code": "NJ-HUB",
+      "event_code": "IN_TRANSIT",
+      "seq": 2
+    },
+    {
+      "id": "H-2002-3",
+      "waybill_id": "WB-2002",
+      "event_ts": "2026-11-17T17:20:00Z",
+      "location_code": "HF-HUB",
+      "event_code": "ARRIVED_HUB",
+      "seq": 3
+    }
+  ]
+}
