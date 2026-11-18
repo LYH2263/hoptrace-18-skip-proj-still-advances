@@ -17,7 +17,7 @@ const typeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'unde
     <table class="table">
       <thead>
         <tr>
-          <th>id</th><th>运单</th><th>原因</th><th>预期下一站</th><th>实际站</th>
+          <th>id</th><th>运单</th><th>原因</th><th>原因同源</th><th>预期下一站</th><th>实际站</th>
           <th>违规类型</th><th>声明路径</th><th>隔离成员</th><th>时间</th>
         </tr>
       </thead>
@@ -26,6 +26,11 @@ const typeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'unde
           <td>{{ r.id }}</td>
           <td>{{ r.waybill_id }}</td>
           <td>{{ r.reason }}</td>
+          <td>
+            <span :class="r.reason_matches_proof && r.proof_id_matches ? 'ok-text' : 'danger-text'">
+              {{ r.reason_matches_proof && r.proof_id_matches ? '一致' : '分叉' }}
+            </span>
+          </td>
           <td class="danger-text">{{ r.expected_location || '—' }}</td>
           <td class="danger-text">{{ r.actual_location || '—' }}</td>
           <td>{{ typeText(r.violation_type) }}</td>
@@ -38,7 +43,7 @@ const typeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'unde
           </td>
           <td>{{ r.created_at }}</td>
         </tr>
-        <tr v-if="!rows.length"><td colspan="9" class="muted">暂无隔离项</td></tr>
+        <tr v-if="!rows.length"><td colspan="10" class="muted">暂无隔离项</td></tr>
       </tbody>
     </table>
   </div>

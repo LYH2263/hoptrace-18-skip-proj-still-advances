@@ -27,4 +27,13 @@ export const api = {
     const s = qs.toString()
     return req(`/api/route-skip-proofs${s ? `?${s}` : ''}`)
   },
+  skipTearVerifications: ({ waybillId, batchId } = {}) => {
+    const qs = new URLSearchParams()
+    if (waybillId) qs.set('waybill_id', waybillId)
+    if (batchId) qs.set('batch_id', batchId)
+    const s = qs.toString()
+    return req(`/api/skip-tear-verifications${s ? `?${s}` : ''}`)
+  },
+  skipTearVerify: (waybillId) =>
+    req(`/api/skip-tear-verifications/verify?waybill_id=${encodeURIComponent(waybillId)}`),
 }

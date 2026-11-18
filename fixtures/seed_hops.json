@@ -97,7 +97,7 @@
       "waybill_id": "WB-2001",
       "event_ts": "2026-11-17T19:40:00Z",
       "location_code": "WH-HUB",
-      "event_code": "ARRIVED_HUB",
+      "event_code": "DELIVERED",
       "seq": 3
     },
     {

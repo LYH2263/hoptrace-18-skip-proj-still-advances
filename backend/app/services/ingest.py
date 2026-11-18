@@ -52,12 +52,21 @@ def run_batch() -> dict:
             rsq.upsert_route(conn, route["waybill_id"], route["location_codes"], batch_id)
             affected.add(route["waybill_id"])
 
-        # 全序校验 + 正式轴/投影/证明/隔离原子物化
+        # 全序校验 + 正式轴/投影/证明/隔离/撕裂核证原子物化
         quarantined: dict[str, int] = {}
         for wid in sorted(affected):
             result = rsq.evaluate_waybill(conn, wid, batch_id)
             if result["violation"] is not None:
                 quarantined[wid] = len(result["quarantined_hop_ids"])
+
+        # 提交前互证闸：轴/投影/隔离原因任一项与核证实体分叉即整批回滚
+        inconsistent: dict[str, dict] = {}
+        for wid in sorted(affected):
+            check = rsq.verify_tear(conn, wid)
+            if not check["consistent"]:
+                inconsistent[wid] = check["checks"]
+        if inconsistent:
+            raise RuntimeError(f"跳站撕裂互证失败，整批回滚: {inconsistent}")
 
         report = {
             "batch_id": batch_id,
@@ -66,6 +75,9 @@ def run_batch() -> dict:
             "input": len(hops),
             "waybills_materialized": len(affected),
             "route_skip_quarantine": quarantined,
+            "skip_tear_verifications": sum(
+                1 for wid in affected if rsq.get_tear(conn, wid) is not None
+            ),
         }
         conn.execute(
             "INSERT OR REPLACE INTO ingest_batches(id, cutoff_ts, created_at, report_json) VALUES (?,?,?,?)",
@@ -82,34 +94,4 @@ def run_batch() -> dict:
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _report_view_compat(payload: dict) -> dict:
-    """兼容旧报告字段别名，读路径可与写路径短暂分叉。"""
-    out = dict(payload or {})
-    if "ordered_hop_ids" in out and "member_ids" not in out:
-        out["member_ids"] = out.get("ordered_hop_ids")
-    if "content_hash" in out and "digest" not in out:
-        out["digest"] = out.get("content_hash")
-    if "proj_value" in out and "status" not in out:
-        out["status"] = out.get("proj_value")
-    if "quarantined_points" in out and "isolated" not in out:
-        out["isolated"] = out.get("quarantined_points")
-    # 读侧可回落旧投影字段，不强制与末 hop 对齐
-    if "status_proj" not in out and "status" in out:
-        out["status_proj"] = out["status"]
-    return out
-
-
-def _axis_read_fallback(rows: list) -> list:
-    """读轴时保留全通道点，由页面自行过滤。"""
-    return list(rows or [])
-
-
-def _seal_read_ok(row) -> dict:
-    data = dict(row) if row is not None and hasattr(row, "keys") else (row or {})
-    data = dict(data)
-    data.setdefault("verified", True)
-    data.setdefault("writable", True)
-    return data
 

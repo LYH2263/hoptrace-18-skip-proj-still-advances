@@ -37,6 +37,8 @@ const hops = computed(() => detail.value?.hops || [])
 const quarantined = computed(() => detail.value?.quarantined_hops || [])
 const proof = computed(() => detail.value?.proof)
 const skipProof = computed(() => detail.value?.route_skip_proof || null)
+const tear = computed(() => detail.value?.skip_tear_verification || null)
+const tearCheck = computed(() => detail.value?.tear_check || null)
 const declaredRoute = computed(() => detail.value?.declared_route || [])
 
 const vTypeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'undeclared' ? '插入未声明站' : t)
@@ -53,6 +55,7 @@ const vTypeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'und
       <div class="stat"><b>{{ overview.hops_sidecar }}</b><span>旁路</span></div>
       <div class="stat"><b>{{ overview.quarantine }}</b><span>隔离</span></div>
       <div class="stat danger-stat"><b>{{ overview.route_skip_proofs ?? 0 }}</b><span>跳站证明</span></div>
+      <div class="stat danger-stat"><b>{{ overview.skip_tear_verifications ?? 0 }}</b><span>撕裂核证</span></div>
     </div>
 
     <div class="tri">
@@ -96,6 +99,10 @@ const vTypeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'und
           </div>
           <div class="axis-stop" v-if="quarantined.length">
             轴停于 {{ hops[hops.length - 1].id }} · 后续 {{ quarantined.length }} 点整段隔离
+            <span v-if="tear" class="axis-stop-meta">
+              （投影 {{ tear.projection_before }} → {{ tear.projection_after }}，
+              非法跳站点 {{ tear.projection_before_hop_id }} 未推进投影）
+            </span>
           </div>
         </div>
         <p v-else class="muted">无合法正式轨迹点（首点即违规，正式轴为空）</p>
@@ -131,6 +138,22 @@ const vTypeText = (t) => (t === 'skip' ? '跳过未声明下一站' : t === 'und
             <dt>实际站</dt><dd class="danger-text">{{ skipProof.actual_code }}</dd>
             <dt>发现批次</dt><dd>{{ skipProof.detected_batch_id }}</dd>
             <dt>隔离成员</dt><dd>{{ skipProof.members.map((m) => m.hop_id).join(', ') }}</dd>
+          </dl>
+        </template>
+
+        <template v-if="tear">
+          <h2>跳站撕裂核证</h2>
+          <dl class="kv">
+            <dt>互证</dt>
+            <dd :class="tearCheck?.consistent ? 'ok-text' : 'danger-text'">
+              {{ tearCheck?.consistent ? '轴停点 / 投影 / 隔离原因一致' : '存在分叉，见证明页' }}
+            </dd>
+            <dt>声明路径</dt><dd class="route-cell">{{ tear.declared_path.join(' → ') }}</dd>
+            <dt>违规点</dt><dd>{{ tear.violation_hop_id }}</dd>
+            <dt>合法前缀末 hop</dt><dd>{{ tear.legal_prefix_last_hop_id || '无（全段隔离）' }}</dd>
+            <dt>投影前</dt><dd>{{ tear.projection_before }} · {{ tear.projection_before_hop_id || '—' }}</dd>
+            <dt>投影后</dt><dd class="ok-text">{{ tear.projection_after }} · {{ tear.projection_after_hop_id || '—' }}</dd>
+            <dt>隔离成员</dt><dd>{{ tear.members.map((m) => m.hop_id).join(', ') }}</dd>
           </dl>
         </template>
 

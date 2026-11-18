@@ -26,7 +26,7 @@
       "waybill_title": "跳站隔离样件",
       "event_ts": "2026-11-17T20:30:00Z",
       "location_code": "WH-HUB",
-      "event_code": "OUT_FOR_DELIVERY",
+      "event_code": "DELIVERED",
       "seq": 4
     },
     {
